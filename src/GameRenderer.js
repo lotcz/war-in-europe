@@ -21,7 +21,7 @@ export default class GameRenderer {
 
 	activate() {
 		this.wrapper = Pixies.createElement(this.dom, 'div', ['war-in-europe']);
-		this.container = Pixies.createElement(this.wrapper, 'div', [, 'container']);
+		this.container = Pixies.createElement(this.wrapper, 'div', ['container']);
 		this.container.appendChild(this.model.renderer.domElement);
 
 		this.onResize();
@@ -35,7 +35,8 @@ export default class GameRenderer {
 	}
 
 	render() {
-		this.model.composer.render();
+		//this.model.composer.render();
+		this.model.renderer.render(this.model.scene, this.model.camera);
 	}
 
 	onResize() {

@@ -1,5 +1,5 @@
 import ProgressValue from "./ProgressValue";
-import Vector3 from "../../model/basic/Vector3";
+import Vector3 from "../Vector3";
 
 export default class ProgressVector3 {
 	progressX;

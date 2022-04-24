@@ -5,20 +5,41 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 
 import ThreeScene from "../assets/scene.json";
+import EventManager from "./class/basic/EventManager";
 
-export default class GameModel {
-
+export default class GameModel extends EventManager {
 
 	constructor() {
+		super();
+
+		this.scene = new THREE.Scene();
 
 		const loader = new THREE.ObjectLoader();
 		const object = loader.parse( ThreeScene );
-		this.scene = new THREE.Scene();
-		this.scene.add( object );
-		console.log(object);
 
-		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-		this.camera = new THREE.PerspectiveCamera(65,1.61, 1, 1000);
+		this.scene.add( object );
+		//console.log(object);
+		this.ambient = this.scene.getObjectByName('AmbientLight');
+		this.ambient.intensity = 0.25;
+		this.center = this.scene.getObjectByName('Center');
+		this.ukraine = this.scene.getObjectByName('Ukraine');
+		this.kremlin = this.scene.getObjectByName('Kremlin');
+		this.factory = this.scene.getObjectByName('Factory');
+		this.money = this.scene.getObjectByName('Money');
+		this.tank = this.scene.getObjectByName('Tank');
+		this.refugees = this.scene.getObjectByName('Refugees');
+
+		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+		this.renderer.setPixelRatio( window.devicePixelRatio );
+		//this.renderer.physicallyCorrectLights = false;
+		//this.renderer.toneMapping = THREE.NoToneMapping;
+		//this.renderer.toneMappingExposure =THREE.no
+		//this.renderer.outputEncoding = THREE.LinearEncoding;
+
+		this.camera = new THREE.PerspectiveCamera(50,1.61, 1, 1000);
+		this.camera.position.set(-32, 26, -9);
+		//this.camera.rotation.set(-125, -46, -134);
+		this.camera.lookAt(this.center.position);
 
 		this.composer = new EffectComposer(this.renderer);
 		this.composer.addPass(new RenderPass(this.scene, this.camera));
