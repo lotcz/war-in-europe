@@ -3,46 +3,64 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
 import ThreeScene from "../assets/scene.json";
 import EventManager from "./class/basic/EventManager";
+
+const ACTIVE_GROUPS = ['Factory', 'Money', 'Kremlin', 'Tank', 'Ukraine', 'Refugees'];
 
 export default class GameModel extends EventManager {
 
 	constructor() {
 		super();
 
+		this.width = 0;
+		this.height = 0;
+
+		this.mouseX = 0;
+		this.mouseY = 0;
+		this.selectedGroup = null;
+
+		this.raycaster = new THREE.Raycaster();
 		this.scene = new THREE.Scene();
 
 		const loader = new THREE.ObjectLoader();
-		const object = loader.parse( ThreeScene );
+		const object = loader.parse(ThreeScene);
+		this.scene.add(object);
 
-		this.scene.add( object );
-		//console.log(object);
 		this.ambient = this.scene.getObjectByName('AmbientLight');
 		this.ambient.intensity = 0.25;
 		this.center = this.scene.getObjectByName('Center');
-		this.ukraine = this.scene.getObjectByName('Ukraine');
-		this.kremlin = this.scene.getObjectByName('Kremlin');
 		this.factory = this.scene.getObjectByName('Factory');
 		this.money = this.scene.getObjectByName('Money');
+		this.moneyStart = this.scene.getObjectByName('MoneyStart');
+		this.moneyEnd = this.scene.getObjectByName('MoneyEnd');
+		this.kremlin = this.scene.getObjectByName('Kremlin');
 		this.tank = this.scene.getObjectByName('Tank');
+		this.tankStart = this.scene.getObjectByName('TankStart');
+		this.tankEnd = this.scene.getObjectByName('TankEnd');
+		this.ukraine = this.scene.getObjectByName('Ukraine');
 		this.refugees = this.scene.getObjectByName('Refugees');
-
-		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		//this.renderer.physicallyCorrectLights = false;
-		//this.renderer.toneMapping = THREE.NoToneMapping;
-		//this.renderer.toneMappingExposure =THREE.no
-		//this.renderer.outputEncoding = THREE.LinearEncoding;
+		this.refugeesStart = this.scene.getObjectByName('RefugeesStart');
+		this.refugeesEnd = this.scene.getObjectByName('RefugeesEnd');
 
 		this.camera = new THREE.PerspectiveCamera(50,1.61, 1, 1000);
 		this.camera.position.set(-32, 26, -9);
-		//this.camera.rotation.set(-125, -46, -134);
 		this.camera.lookAt(this.center.position);
+
+		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+		this.renderer.setPixelRatio( window.devicePixelRatio );
 
 		this.composer = new EffectComposer(this.renderer);
 		this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+		this.outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), this.scene, this.camera);
+		this.outlinePass.edgeThickness = 1;
+		this.outlinePass.edgeStrength = 5;
+		this.outlinePass.visibleEdgeColor.set('#a0a0a0');
+		this.composer.addPass(this.outlinePass);
+
 		this.effectFXAA = new ShaderPass(FXAAShader);
 		this.composer.addPass(this.effectFXAA);
 
@@ -68,7 +86,45 @@ export default class GameModel extends EventManager {
 		const pixelRatio = this.renderer.getPixelRatio();
 		this.effectFXAA.material.uniforms[ 'resolution' ].value.x = 1 / (  width * pixelRatio );
 		this.effectFXAA.material.uniforms[ 'resolution' ].value.y = 1 / (  height * pixelRatio );
+
+		this.outlinePass.setSize(width, height);
+
+		this.width = width;
+		this.height = height;
 	}
 
+	checkIntersection(mouseX, mouseY) {
+		this.raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), this.camera);
+		const intersects = this.raycaster.intersectObject(this.scene, true );
+
+		this.selectedGroup = null;
+		this.outlinePass.selectedObjects = [];
+
+		for (let i = 0; i < intersects.length; i++) {
+			const selectedObject = intersects[0].object;
+			const group = this.findActiveGroup(selectedObject);
+			if (group) {
+				const selectedObjects = [];
+				group.traverse((m) => {
+					if (m.geometry && !selectedObjects.includes(m)) {
+						selectedObjects.push(m);
+					}
+				});
+				this.outlinePass.selectedObjects = selectedObjects;
+				this.selectedGroup = group.name;
+				return;
+			}
+		}
+	}
+
+	findActiveGroup(object) {
+		if (ACTIVE_GROUPS.includes(object.name)) {
+			return object;
+		}
+		if (object.parent) {
+			return this.findActiveGroup(object.parent);
+		}
+		return null;
+	}
 
 }
