@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
@@ -34,7 +35,7 @@ export default class GameModel extends EventManager {
 		this.scene.add(object);
 
 		this.ambient = this.scene.getObjectByName('AmbientLight');
-		this.ambient.intensity = 0.25;
+		//this.ambient.intensity = 0.25;
 		this.center = this.scene.getObjectByName('Center');
 		this.factory = this.scene.getObjectByName('Factory');
 		this.money = this.scene.getObjectByName('Money');
@@ -49,24 +50,7 @@ export default class GameModel extends EventManager {
 		this.refugeesStart = this.scene.getObjectByName('RefugeesStart');
 		this.refugeesEnd = this.scene.getObjectByName('RefugeesEnd');
 
-		this.camera = new THREE.PerspectiveCamera(50,1.61, 1, 1000);
-		this.camera.position.set(-32, 26, -9);
-		this.camera.lookAt(this.center.position);
 
-		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-
-		this.composer = new EffectComposer(this.renderer);
-		this.composer.addPass(new RenderPass(this.scene, this.camera));
-
-		this.outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), this.scene, this.camera);
-		this.outlinePass.edgeThickness = 1;
-		this.outlinePass.edgeStrength = 5;
-		this.outlinePass.visibleEdgeColor.set('#a0a0a0');
-		this.composer.addPass(this.outlinePass);
-
-		this.effectFXAA = new ShaderPass(FXAAShader);
-		this.composer.addPass(this.effectFXAA);
 
 		this.smokeDefinition = new GeneratorDefinitionModel();
 		this.smokeDefinition.particleImage = new Image();
@@ -82,6 +66,33 @@ export default class GameModel extends EventManager {
 		this.factorySmoke.position.copy(this.factory.position);
 		this.factorySmoke.position.y = 3;
 		//this.factorySmoke.on = true;
+				
+		this.camera = new THREE.PerspectiveCamera(50,1.61, 1, 1000);
+		this.camera.position.set(-32, 26, -9);
+		this.camera.lookAt(this.center.position);
+
+		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+		this.renderer.setPixelRatio( window.devicePixelRatio );
+		//this.renderer.outputEncoding = THREE.sRGBEncoding;
+
+		this.composer = new EffectComposer(this.renderer);
+		//this.composer.outputEncoding = THREE.sRGBEncoding;
+		this.composer.addPass(new RenderPass(this.scene, this.camera));
+
+		this.outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), this.scene, this.camera);
+		//this.outlinePass.outputEncoding = THREE.sRGBEncoding;
+		this.outlinePass.edgeThickness = 1;
+		this.outlinePass.edgeStrength = 5;
+		this.outlinePass.visibleEdgeColor.set('#a0a0a0');
+		this.composer.addPass(this.outlinePass);
+
+		this.effectFXAA = new ShaderPass(FXAAShader);
+		this.effectFXAA.outputEncoding = THREE.sRGBEncoding;
+		this.composer.addPass(this.effectFXAA);
+
+		const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+		this.composer.addPass(gammaCorrectionPass);
+		//renderer.gammaFactor = 2.2 i
 	}
 
 	onResize(width, height) {
