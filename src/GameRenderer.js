@@ -36,6 +36,7 @@ export default class GameRenderer {
 
 	render() {
 		this.model.composer.render();
+
 		//this.model.renderer.render(this.model.scene, this.model.camera);
 	}
 

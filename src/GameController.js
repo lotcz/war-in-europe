@@ -1,8 +1,8 @@
 import GenericController from "./GenericController";
 import AnimatedVector3 from "./class/animating/AnimatedVector3";
-import Vector3 from "./class/Vector3";
 import AnimatedValue from "./class/animating/AnimatedValue";
 import * as THREE from "three";
+import GeneratorController from "./particles/GeneratorController";
 
 export default class GameController {
 
@@ -30,6 +30,10 @@ export default class GameController {
 		this.dom.addEventListener('mousemove', this.mouseMoveHandler);
 		this.dom.addEventListener('click', this.mouseClickHandler);
 
+		this.factorySmokeController = new GeneratorController(this.model, this.model.factorySmoke);
+		this.factorySmokeController.activate();
+		this.controllers.push(this.factorySmokeController);
+
 		this.activateStageFactory();
 	}
 
@@ -43,11 +47,12 @@ export default class GameController {
 	}
 
 	activateStageFactory() {
+		this.model.factorySmoke.on = true;
 		const handler = () => {
 			const moneyScale = new AnimatedValue(0, 1,1000);
 			const moneyPosition = new AnimatedVector3(
-				new Vector3(this.model.factory.position),
-				new Vector3(this.model.moneyStart.position),
+				this.model.factory.position.clone(),
+				this.model.moneyStart.position.clone(),
 				1000
 			);
 			this.addController(
@@ -59,6 +64,7 @@ export default class GameController {
 				},
 				() => moneyScale.isFinished() && moneyPosition.isFinished(),
 				() => {
+					this.model.factorySmoke.on = false;
 					this.activateStageMoney();
 				}
 			);
@@ -70,8 +76,8 @@ export default class GameController {
 	activateStageMoney() {
 		const handler = () => {
 			const moneyPosition = new AnimatedVector3(
-				new Vector3(this.model.moneyStart.position),
-				new Vector3(this.model.moneyEnd.position),
+				this.model.moneyStart.position.clone(),
+				this.model.moneyEnd.position.clone(),
 				3000
 			);
 			this.addController(
@@ -83,8 +89,8 @@ export default class GameController {
 				() => {
 					const moneyScale = new AnimatedValue(1, 0,1000);
 					const moneyPosition = new AnimatedVector3(
-						new Vector3(this.model.moneyEnd.position),
-						new Vector3(this.model.kremlin.position),
+						this.model.moneyEnd.position.clone(),
+						this.model.kremlin.position.clone(),
 						1000
 					);
 					this.addController(
@@ -110,8 +116,8 @@ export default class GameController {
 		const handler = () => {
 			const tankScale = new AnimatedValue(0, 1,1000);
 			const tankPosition = new AnimatedVector3(
-				new Vector3(this.model.kremlin.position),
-				new Vector3(this.model.tankStart.position),
+				this.model.kremlin.position.clone(),
+				this.model.tankStart.position.clone(),
 				1000
 			);
 			this.addController(
@@ -135,8 +141,8 @@ export default class GameController {
 	activateStageTank() {
 		const handler = () => {
 			const tankPosition = new AnimatedVector3(
-				new Vector3(this.model.tankStart.position),
-				new Vector3(this.model.tankEnd.position),
+				this.model.tankStart.position.clone(),
+				this.model.tankEnd.position.clone(),
 				3000
 			);
 			this.addController(
@@ -149,8 +155,8 @@ export default class GameController {
 				() => {
 					const tankScale = new AnimatedValue(1, 0,1000);
 					const tankPosition = new AnimatedVector3(
-						new Vector3(this.model.tankEnd.position),
-						new Vector3(this.model.ukraine.position),
+						this.model.tankEnd.position.clone(),
+						this.model.ukraine.position.clone(),
 						1000
 					);
 					this.addController(
@@ -177,8 +183,8 @@ export default class GameController {
 		const handler = () => {
 			const refugeesScale = new AnimatedValue(0, 1,1000);
 			const refugeesPosition = new AnimatedVector3(
-				new Vector3(this.model.ukraine.position),
-				new Vector3(this.model.refugeesStart.position),
+				this.model.ukraine.position.clone(),
+				this.model.refugeesStart.position.clone(),
 				1000
 			);
 			this.addController(
@@ -202,8 +208,8 @@ export default class GameController {
 	activateStageRefugees() {
 		const handler = () => {
 			const refugeesPosition = new AnimatedVector3(
-				new Vector3(this.model.refugeesStart.position),
-				new Vector3(this.model.refugeesEnd.position),
+				this.model.refugeesStart.position.clone(),
+				this.model.refugeesEnd.position.clone(),
 				3000
 			);
 			this.addController(
@@ -226,8 +232,8 @@ export default class GameController {
 		const handler = () => {
 			const refugeesScale = new AnimatedValue(1, 0,1000);
 			const refugeesPosition = new AnimatedVector3(
-				new Vector3(this.model.refugeesEnd.position),
-				new Vector3(this.model.factory.position),
+				this.model.refugeesEnd.position.clone(),
+				this.model.factory.position.clone(),
 				1000
 			);
 			this.addController(

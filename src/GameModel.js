@@ -7,6 +7,10 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
 import ThreeScene from "../assets/scene.json";
 import EventManager from "./class/basic/EventManager";
+import GeneratorDefinitionModel from "./particles/GeneratorDefinitionModel";
+
+import SmokeImage from "../assets/img/smoke.png";
+import GeneratorModel from "./particles/GeneratorModel";
 
 const ACTIVE_GROUPS = ['Factory', 'Money', 'Kremlin', 'Tank', 'Ukraine', 'Refugees'];
 
@@ -64,6 +68,20 @@ export default class GameModel extends EventManager {
 		this.effectFXAA = new ShaderPass(FXAAShader);
 		this.composer.addPass(this.effectFXAA);
 
+		this.smokeDefinition = new GeneratorDefinitionModel();
+		this.smokeDefinition.particleImage = new Image();
+		this.smokeDefinition.particleImage.src = SmokeImage;
+		this.smokeDefinition.particleMovement = new THREE.Vector3(1.5, 0, -1.5);
+		this.smokeDefinition.particleMovementSpread = new THREE.Vector3(0.3, 0.3, 0);
+		this.smokeDefinition.particlePositionSpread = new THREE.Vector3(0.1, 0.5, 0.1);
+		this.smokeDefinition.particleScaleGrowth = 0.5;
+
+		this.factorySmoke = new GeneratorModel();
+		this.factorySmoke.definition = this.smokeDefinition;
+		this.factorySmoke.scale = 0.5;
+		this.factorySmoke.position.copy(this.factory.position);
+		this.factorySmoke.position.y = 3;
+		//this.factorySmoke.on = true;
 	}
 
 	onResize(width, height) {

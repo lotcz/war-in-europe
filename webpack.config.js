@@ -10,7 +10,7 @@ module.exports = {
 	devtool: 'inline-source-map',
 	devServer: {
 		contentBase: './dist',
-		port: 8082
+		port: 8083
 	},
 	plugins: [
 		new HtmlWebpackPlugin({

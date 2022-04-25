@@ -1,5 +1,5 @@
 import ProgressValue from "./ProgressValue";
-import Vector3 from "../Vector3";
+import * as THREE from "three";
 
 export default class ProgressVector3 {
 	progressX;
@@ -20,7 +20,7 @@ export default class ProgressVector3 {
 
 	get(progress = null) {
 		if (progress !== null) this.setProgress(progress);
-		return new Vector3(this.progressX.get(), this.progressY.get(), this.progressZ.get());
+		return new THREE.Vector3(this.progressX.get(), this.progressY.get(), this.progressZ.get());
 	}
 
 }
