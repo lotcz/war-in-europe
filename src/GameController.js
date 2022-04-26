@@ -43,8 +43,8 @@ export default class GameController {
 		this.dom.addEventListener('mousemove', this.mouseMoveHandler);
 		this.dom.addEventListener('click', this.mouseClickHandler);
 
-		//this.activateStageFactory();
-		this.activateStageKremlin();
+		this.activateStageFactory();
+		//this.activateStageUkraine();
 	}
 
 	deactivate() {
@@ -78,6 +78,7 @@ export default class GameController {
 
 		const handler = () => {
 			this.model.activeGroup = null;
+			this.model.moneySound.replay();
 			const moneyScale = new AnimatedValue(0, 1,700);
 			const moneyPosition = new AnimatedVector3(
 				this.model.factory.position.clone(),
@@ -119,6 +120,7 @@ export default class GameController {
 
 	activateStageMoney() {
 		const handler = () => {
+			this.model.money2Sound.replay();
 			this.model.activeGroup = null;
 			const moneyPosition = new AnimatedVector3(
 				this.model.moneyStart.position.clone(),
@@ -176,6 +178,8 @@ export default class GameController {
 	activateStageKremlin() {
 		this.model.katusha1.on = true;
 		this.model.katusha2.on = true;
+		this.model.katushaSound.volume(1);
+		this.model.katushaSound.play();
 		this.model.activeGroup = 'Kremlin';
 
 		const handler = () => {
@@ -205,9 +209,11 @@ export default class GameController {
 						(delta) => {
 							const vol = dummy.get(delta);
 							this.model.engineSound.volume(vol);
+							this.model.katushaSound.volume(1 - vol);
 						},
 						() => dummy.isFinished(),
 						() => {
+							this.model.katushaSound.stop();
 							const tankPosition = new AnimatedVector3(
 								this.model.tankStart.position.clone(),
 								this.model.tankEnd.position.clone(),
@@ -218,6 +224,7 @@ export default class GameController {
 									const pos = tankPosition.get(delta);
 									this.model.tank.position.set(pos.x, pos.y, pos.z);
 									this.model.tankFume.position.copy(this.model.tank.position);
+									this.model.tankFume.position.y += 2;
 								},
 								() => tankPosition.isFinished(),
 								() => {
@@ -331,6 +338,39 @@ export default class GameController {
 			() => {}
 		);
 
+		let soundTimeout3 = 0;
+		this.model.screamFemaleSound.volume(1);
+
+		this.addController(
+			(delta) => {
+				soundTimeout3 += delta;
+				if (soundTimeout3 > 1700) {
+					if (Math.random() < (0.02 * (soundTimeout2 / 6000))) {
+						soundTimeout3 = 0;
+						this.model.screamFemaleSound.replay();
+					}
+				}
+			},
+			() => this.model.activeGroup !== 'Ukraine',
+			() => {}
+		);
+
+		let soundTimeout4 = 0;
+
+		this.addController(
+			(delta) => {
+				soundTimeout4 += delta;
+				if (soundTimeout4 > 1700) {
+					if (Math.random() < (0.02 * (soundTimeout2 / 5000))) {
+						soundTimeout4 = 0;
+						this.model.screamMaleSound.replay();
+					}
+				}
+			},
+			() => this.model.activeGroup !== 'Ukraine',
+			() => {}
+		);
+
 		const handler = () => {
 			this.model.activeGroup = null;
 			const refugeesScale = new AnimatedValue(0, 1,1000);
@@ -359,7 +399,8 @@ export default class GameController {
 						},
 						() => dummy.isFinished(),
 						() => {
-							//this.model.warExplosions.stop();
+							this.model.screamFemaleSound.replay();
+							//this.model.screamMaleSound.replay();
 							this.model.whiteSmoke1.on = false;
 							this.model.whiteSmoke2.on = false;
 							this.model.whiteSmoke3.on = false;
@@ -396,6 +437,9 @@ export default class GameController {
 		this.model.blood1.on = false;
 
 		const handler = () => {
+			this.model.screamFemaleSound.volume(0.5);
+			this.model.screamFemaleSound.replay();
+			//this.model.screamMaleSound.replay();
 			this.model.activeGroup = null;
 			const refugeesScale = new AnimatedValue(1, 0,1000);
 			const refugeesPosition = new AnimatedVector3(

@@ -23,6 +23,11 @@ import CannonSound from "../assets/sound/cannon.ogg";
 import EngineSound from "../assets/sound/engine.ogg";
 import EngineStartSound from "../assets/sound/engine-start.ogg";
 import EngineStopSound from "../assets/sound/engine-stop.ogg";
+import MoneySound from "../assets/sound/money.ogg";
+import Money2Sound from "../assets/sound/money2.ogg";
+import KatushaSound from "../assets/sound/katusha.ogg";
+import ScreamMaleSound from "../assets/sound/scream-male.ogg";
+import ScreamFemaleSound from "../assets/sound/scream-female.ogg";
 
 import GeneratorModel from "./particles/GeneratorModel";
 import ParticleSystemDefinition from "./particles/ParticleSystemDefinition";
@@ -246,6 +251,10 @@ export default class GameModel extends EventManager {
 		// SOUND
 
 		this.factorySound = new Sound(FactorySound, {loop: true});
+		this.moneySound = new Sound(MoneySound, {loop: false});
+		this.money2Sound = new Sound(Money2Sound, {loop: false});
+
+		this.katushaSound = new Sound(KatushaSound, {loop: true});
 
 		this.engineSound = new Sound(EngineSound, {loop: true});
 		this.engineStartSound = new Sound(EngineStartSound, {loop: false});
@@ -253,6 +262,8 @@ export default class GameModel extends EventManager {
 
 		this.warExplosions = new Sound(WarExplosionsSound, {loop: false});
 		this.cannonSound = new Sound(CannonSound, {loop: false});
+		this.screamMaleSound = new Sound(ScreamMaleSound, {loop: false});
+		this.screamFemaleSound = new Sound(ScreamFemaleSound, {loop: false});
 
 		// CAMERA AND RENDERER
 
