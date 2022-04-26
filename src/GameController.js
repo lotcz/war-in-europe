@@ -43,8 +43,7 @@ export default class GameController {
 		this.dom.addEventListener('mousemove', this.mouseMoveHandler);
 		this.dom.addEventListener('click', this.mouseClickHandler);
 
-		//this.activateStageFactory();
-		this.activateStageTank();
+		this.activateStageFactory();
 	}
 
 	deactivate() {
@@ -233,6 +232,7 @@ export default class GameController {
 			this.model.whiteSmoke1.on = true;
 			this.model.whiteSmoke2.on = true;
 			this.model.whiteSmoke3.on = true;
+			this.model.scream1.on = true;
 			this.model.activeGroup = null;
 			const tankScale = new AnimatedValue(1, 0,1000);
 			const tankPosition = new AnimatedVector3(
@@ -262,9 +262,6 @@ export default class GameController {
 
 	activateStageUkraine() {
 		const handler = () => {
-			this.model.whiteSmoke1.on = false;
-			this.model.whiteSmoke2.on = false;
-			this.model.whiteSmoke3.on = false;
 			this.model.activeGroup = null;
 			const refugeesScale = new AnimatedValue(0, 1,1000);
 			const refugeesPosition = new AnimatedVector3(
@@ -282,6 +279,9 @@ export default class GameController {
 				},
 				() => refugeesScale.isFinished() && refugeesPosition.isFinished(),
 				() => {
+					this.model.blood1.on = true;
+					this.model.blood1.position.copy(this.model.refugees.position);
+					this.model.blood1.position.z += 1;
 					const dummy = new AnimatedValue(0,1,1500);
 					this.addController(
 						(delta) => {
@@ -289,6 +289,10 @@ export default class GameController {
 						},
 						() => dummy.isFinished(),
 						() => {
+							this.model.whiteSmoke1.on = false;
+							this.model.whiteSmoke2.on = false;
+							this.model.whiteSmoke3.on = false;
+							this.model.scream1.on = false;
 							const refugeesPosition = new AnimatedVector3(
 								this.model.refugeesStart.position.clone(),
 								this.model.refugeesEnd.position.clone(),
@@ -299,6 +303,8 @@ export default class GameController {
 									const pos = refugeesPosition.get(delta);
 									this.model.refugees.position.set(pos.x, pos.y, pos.z);
 									this.model.refugees.lookAt(this.model.factory.position);
+									this.model.blood1.position.copy(this.model.refugees.position);
+									this.model.blood1.position.z += 2;
 								},
 								() => refugeesPosition.isFinished(),
 								() => {
@@ -317,6 +323,8 @@ export default class GameController {
 	}
 
 	activateStageRefugees() {
+		this.model.blood1.on = false;
+
 		const handler = () => {
 			this.model.activeGroup = null;
 			const refugeesScale = new AnimatedValue(1, 0,1000);

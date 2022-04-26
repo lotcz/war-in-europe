@@ -3,8 +3,6 @@ import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectio
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
-import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
-import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
 import ThreeScene from "../assets/scene.json";
 import EventManager from "./class/basic/EventManager";
@@ -15,6 +13,8 @@ import SmokeWhiteImage from "../assets/img/smoke-white.png";
 import NoteImage1 from "../assets/img/note1.png";
 import NoteImage2 from "../assets/img/note2.png";
 import NoteImage3 from "../assets/img/note3.png";
+import ScreamImage from "../assets/img/scream.png";
+import BloodImage from "../assets/img/blood.png";
 
 import GeneratorModel from "./particles/GeneratorModel";
 import ParticleSystemDefinition from "./particles/ParticleSystemDefinition";
@@ -45,7 +45,22 @@ export default class GameModel extends EventManager {
 		const object = loader.parse(ThreeScene);
 		this.scene.add(object);
 
+		this.ground = this.scene.getObjectByName("Ground");
+		this.ground.receiveShadow = true;
+
 		this.ambient = this.scene.getObjectByName('AmbientLight');
+		this.directional = this.scene.getObjectByName('DirectionalLight');
+		this.directional.castShadow = true;
+		this.directional.shadow.bias = 0;
+		this.directional.shadow.camera.near = 0.5;
+		this.directional.shadow.camera.far = 125;
+		this.directional.shadow.camera.right = 50;
+		this.directional.shadow.camera.left = -50;
+		this.directional.shadow.camera.top	= 25;
+		this.directional.shadow.camera.bottom = - 25;
+		this.directional.shadow.mapSize.width = 1024;
+		this.directional.shadow.mapSize.height = 1024;
+
 		//this.ambient.intensity = 0.25;
 		this.center = this.scene.getObjectByName('Center');
 		this.factory = this.scene.getObjectByName('Factory');
@@ -102,7 +117,7 @@ export default class GameModel extends EventManager {
 		this.noteDefinition1.particleLifetimeSpread = 0.1;
 		this.noteDefinition1.particleImage = new Image();
 		this.noteDefinition1.particleImage.src = NoteImage1;
-		this.noteDefinition1.particleMovement = new THREE.Vector3(0, 2.5, 1.5);
+		this.noteDefinition1.particleMovement = new THREE.Vector3(0, 3.5, 2.5);
 		this.noteDefinition1.particleMovementSpread = new THREE.Vector3(2, 0.1, 5);
 		this.noteDefinition1.particlePositionSpread = new THREE.Vector3(0.1, 0.5, 0);
 		this.score.generatorDefinitions.push(this.noteDefinition1);
@@ -115,7 +130,7 @@ export default class GameModel extends EventManager {
 		this.noteDefinition2.particleLifetimeSpread = 0.1;
 		this.noteDefinition2.particleImage = new Image();
 		this.noteDefinition2.particleImage.src = NoteImage2;
-		this.noteDefinition2.particleMovement = new THREE.Vector3(0, 2.5, 1.5);
+		this.noteDefinition2.particleMovement = new THREE.Vector3(0, 3.5, 2.5);
 		this.noteDefinition2.particleMovementSpread = new THREE.Vector3(2, 0.1, 5);
 		this.noteDefinition2.particlePositionSpread = new THREE.Vector3(1, 0.5, 0);
 		this.score.generatorDefinitions.push(this.noteDefinition2);
@@ -128,7 +143,7 @@ export default class GameModel extends EventManager {
 		this.noteDefinition3.particleLifetimeSpread = 0.1;
 		this.noteDefinition3.particleImage = new Image();
 		this.noteDefinition3.particleImage.src = NoteImage3;
-		this.noteDefinition3.particleMovement = new THREE.Vector3(0, 2.5, 1.5);
+		this.noteDefinition3.particleMovement = new THREE.Vector3(0, 3.5, 2.5);
 		this.noteDefinition3.particleMovementSpread = new THREE.Vector3(2, 0.1, 5);
 		this.noteDefinition3.particlePositionSpread = new THREE.Vector3(1, 0.5, 0);
 		this.score.generatorDefinitions.push(this.noteDefinition3);
@@ -183,14 +198,52 @@ export default class GameModel extends EventManager {
 		this.whiteSmoke3.scale = 0.4;
 		this.generators.push(this.whiteSmoke3);
 
+		this.screamsDefinition = new GeneratorDefinition();
+		this.screamsDefinition.particlesPerSecond = 2;
+		this.screamsDefinition.scale = 1;
+		this.screamsDefinition.particleScaleGrowth = 0.5;
+		this.screamsDefinition.particleScaleSpread = 0.5;
+		this.screamsDefinition.particleLifetime = 2;
+		this.screamsDefinition.particleLifetimeSpread = 0.1;
+		this.screamsDefinition.particleImage = new Image();
+		this.screamsDefinition.particleImage.src = ScreamImage;
+		this.screamsDefinition.particlePositionSpread = new THREE.Vector3(4, 0, 0);
+		this.screamsDefinition.particleMovement = new THREE.Vector3(0, 1.5, 0);
+		this.screamsDefinition.particleMovementSpread = new THREE.Vector3(5, 0, 0);
+
+		this.scream1 = new GeneratorModel(this.screamsDefinition, new THREE.Vector3());
+		this.scream1.position.copy(this.ukraine.position);
+		this.scream1.position.x -= 1.5;
+		this.scream1.position.y += 1;
+		this.scream1.position.z -= 1.5;
+		this.generators.push(this.scream1);
+
+		this.bloodDefinition = new GeneratorDefinition();
+		this.bloodDefinition.particlesPerSecond = 5;
+		this.bloodDefinition.scale = 0.2;
+		this.bloodDefinition.particleScaleGrowth = 0.3;
+		this.bloodDefinition.particleScaleSpread = 0;
+		this.bloodDefinition.particleLifetime = 4;
+		this.bloodDefinition.particleLifetimeSpread = 0.1;
+		this.bloodDefinition.particleImage = new Image();
+		this.bloodDefinition.particleImage.src = BloodImage;
+		this.bloodDefinition.particlePositionSpread = new THREE.Vector3(2, 0, 0);
+		this.bloodDefinition.particleMovement = new THREE.Vector3(0, 0, 0);
+		this.bloodDefinition.particleMovementSpread = new THREE.Vector3(0, 0.1, 0);
+
+		this.blood1 = new GeneratorModel(this.bloodDefinition, new THREE.Vector3());
+		this.generators.push(this.blood1);
+
 		// CAMERA AND RENDERER
+
 		this.camera = new THREE.PerspectiveCamera(50,1.61, 1, 1000);
 		this.camera.position.set(-32, 26, -9);
 		this.camera.lookAt(this.center.position);
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 		this.renderer.setPixelRatio( window.devicePixelRatio );
-
+		this.renderer.shadowMapEnabled = true;
+		this.renderer.shadowMapType = THREE.PCFShadowMap;
 		this.composer = new EffectComposer(this.renderer);
 		this.composer.addPass(new RenderPass(this.scene, this.camera));
 /*

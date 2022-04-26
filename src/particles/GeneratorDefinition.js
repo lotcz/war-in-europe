@@ -35,8 +35,8 @@ export default class GeneratorDefinition {
 			texture.wrapT = THREE.WrapAroundEnding;
 			this.materialBase = new THREE.SpriteMaterial({map: texture});
 			//this.materialBase.depthWrite = false;
-			//this.materialBase.depthTest = false;
-			this.materialBase.alphaTest = 0.1;
+			this.materialBase.depthTest = false;
+			this.materialBase.alphaTest = 0.01;
 		}
 
 		if (!this.materials[opacity]) {
