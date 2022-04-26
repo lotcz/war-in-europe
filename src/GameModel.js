@@ -16,9 +16,18 @@ import NoteImage3 from "../assets/img/note3.png";
 import ScreamImage from "../assets/img/scream.png";
 import BloodImage from "../assets/img/blood.png";
 
+import Sound from "./class/Sound";
+import WarExplosionsSound from "../assets/sound/war-explosions.ogg";
+import FactorySound from "../assets/sound/factory.ogg";
+import CannonSound from "../assets/sound/cannon.ogg";
+import EngineSound from "../assets/sound/engine.ogg";
+import EngineStartSound from "../assets/sound/engine-start.ogg";
+import EngineStopSound from "../assets/sound/engine-stop.ogg";
+
 import GeneratorModel from "./particles/GeneratorModel";
 import ParticleSystemDefinition from "./particles/ParticleSystemDefinition";
 import ParticleSystemModel from "./particles/ParticleSystemModel";
+
 
 const ACTIVE_GROUPS = ['Factory', 'Money', 'Kremlin', 'Tank', 'Ukraine', 'Refugees'];
 
@@ -234,6 +243,17 @@ export default class GameModel extends EventManager {
 		this.blood1 = new GeneratorModel(this.bloodDefinition, new THREE.Vector3());
 		this.generators.push(this.blood1);
 
+		// SOUND
+
+		this.factorySound = new Sound(FactorySound, {loop: true});
+
+		this.engineSound = new Sound(EngineSound, {loop: true});
+		this.engineStartSound = new Sound(EngineStartSound, {loop: false});
+		this.engineStopSound = new Sound(EngineStopSound, {loop: false});
+
+		this.warExplosions = new Sound(WarExplosionsSound, {loop: false});
+		this.cannonSound = new Sound(CannonSound, {loop: false});
+
 		// CAMERA AND RENDERER
 
 		this.camera = new THREE.PerspectiveCamera(50,1.61, 1, 1000);
@@ -242,8 +262,8 @@ export default class GameModel extends EventManager {
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
 		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.shadowMapEnabled = true;
-		this.renderer.shadowMapType = THREE.PCFShadowMap;
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = THREE.PCFShadowMap;
 		this.composer = new EffectComposer(this.renderer);
 		this.composer.addPass(new RenderPass(this.scene, this.camera));
 /*
