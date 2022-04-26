@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export default class GeneratorDefinitionModel {
+export default class GeneratorDefinition {
 
 	constructor() {
 		this.materialBase = null;
@@ -10,17 +10,17 @@ export default class GeneratorDefinitionModel {
 
 		this.particlesPerSecond = 5;
 
-		this.particleScale = 1;
+		this.scale = 1;
 		this.particleScaleSpread = 0.1; // new particles may be smaller or bigger
 		this.particleScaleGrowth = 0.1; // particles will grow to 1.1 in one second, can be negative
 
 		this.particlePositionSpread = new THREE.Vector3(0.1, 1, 0.1); // particles starting point offset
 
-		this.particleMovement = new THREE.Vector3(1, 0.1, 0); // movement per second
+		this.particleMovement = new THREE.Vector3(0, 1, 0); // movement per second
 		this.particleMovementSpread = new THREE.Vector3(0.1, 0.1, 0.1); // random movement change per second
 
-		this.particleLifetime = 3; // in seconds
-		this.particleLifetimeSpread = 1;
+		this.particleLifetime = 5; // in seconds
+		this.particleLifetimeSpread = 2;
 
 		this.particleFadeOutDuration = 1; // in seconds
 	}
@@ -31,9 +31,12 @@ export default class GeneratorDefinitionModel {
 			texture.image = this.particleImage;
 			texture.needsUpdate = true;
 			texture.repeat.set(1, 1);
-			texture.wrapS = THREE.RepeatWrapping;
-			texture.wrapT = THREE.RepeatWrapping;
+			texture.wrapS = THREE.WrapAroundEnding;
+			texture.wrapT = THREE.WrapAroundEnding;
 			this.materialBase = new THREE.SpriteMaterial({map: texture});
+			//this.materialBase.depthWrite = false;
+			//this.materialBase.depthTest = false;
+			this.materialBase.alphaTest = 0.1;
 		}
 
 		if (!this.materials[opacity]) {

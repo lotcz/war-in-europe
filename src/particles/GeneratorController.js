@@ -19,7 +19,7 @@ export default class GeneratorController {
 
 	activate() {
 		this.particleMaxTimeout = (1 / this.model.definition.particlesPerSecond) * 1000;
-		this.particleTimeout = 0;
+		this.particleTimeout = Math.random() * this.particleMaxTimeout;
 	}
 
 	deactivate() {
@@ -39,7 +39,7 @@ export default class GeneratorController {
 
 	addParticle() {
 		const position = this.model.position.clone().add(this.model.definition.particlePositionSpread.clone().multiplyScalar(-0.5 + Math.random()));
-		const scale = this.model.scale + (this.model.definition.particleScaleSpread * (-0.5 + Math.random()));
+		const scale = this.model.definition.scale * (this.model.scale + (this.model.definition.particleScaleSpread * (-0.5 + Math.random())));
 		const lifetime = this.model.definition.particleLifetime + (this.model.definition.particleLifetimeSpread * (-0.5 + Math.random()));
 		const movement = this.model.definition.particleMovement.clone().add(this.model.definition.particleMovementSpread.clone().multiplyScalar(-0.5 + Math.random()));
 		const material = this.model.definition.getMaterial();

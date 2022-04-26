@@ -15,8 +15,10 @@ export default class GameRenderer {
 		this.dom = dom;
 
 		this.onResizeHandler = (event) => this.onResize(event);
+		this.onGroupSelectedHandler = (group) => this.groupSelected(group);
 
 		Pixies.destroyElement(document.getElementById('initial_loading'));
+
 	}
 
 	activate() {
@@ -26,12 +28,14 @@ export default class GameRenderer {
 
 		this.onResize();
 		window.addEventListener('resize', this.onResizeHandler);
+		this.model.addEventListener('selected', this.onGroupSelectedHandler);
 	}
 
 	deactivate() {
 		this.model.renderer.dispose();
 		Pixies.destroyElement(this.container);
 		window.removeEventListener('resize', this.onResizeHandler);
+		this.model.removeEventListener('selected', this.onGroupSelectedHandler);
 	}
 
 	render() {
@@ -43,6 +47,14 @@ export default class GameRenderer {
 	onResize() {
 		//console.log(this.dom);
 		this.model.onResize(this.wrapper.offsetWidth, this.wrapper.offsetHeight);
+	}
+
+	groupSelected(group) {
+		if (group && group === this.model.activeGroup) {
+			this.dom.style.cursor = 'pointer';
+		} else {
+			this.dom.style.cursor = 'default';
+		}
 	}
 
 }

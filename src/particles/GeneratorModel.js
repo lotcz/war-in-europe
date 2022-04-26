@@ -1,13 +1,13 @@
-import GeneratorDefinitionModel from "./GeneratorDefinitionModel";
+import GeneratorDefinition from "./GeneratorDefinition";
 import * as THREE from "three";
 
 export default class GeneratorModel {
 
-	constructor() {
+	constructor(definition, position = new THREE.Vector3()) {
 		this.on = false;
-		this.position = new THREE.Vector3(); // particles starting point
+		this.position = position; // particles starting point
 		this.scale = 1;
-		this.definition = new GeneratorDefinitionModel();
+		this.definition = definition || new GeneratorDefinition();
 
 		this.particles = []; // array of ParticleModel
 	}
