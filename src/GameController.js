@@ -178,7 +178,7 @@ export default class GameController {
 				},
 				() => moneyPosition.isFinished(),
 				() => {
-					const dummy = new AnimatedValue(0, 1, 200);
+					const dummy = new AnimatedValue(0, 1, 300);
 					this.addController(
 						(delta) => dummy.get(delta),
 						() => dummy.isFinished(),

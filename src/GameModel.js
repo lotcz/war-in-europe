@@ -122,8 +122,8 @@ export default class GameModel extends EventManager {
 		this.coinsDefinition.particlesPerSecond = 10;
 		this.coinsDefinition.scale = 0.5;
 		this.coinsDefinition.particleScaleGrowth = -0.2;
-		this.coinsDefinition.particleLifetime = 3;
-		this.coinsDefinition.particleLifetimeSpread = 0.1;
+		this.coinsDefinition.particleLifetime = 1.5;
+		this.coinsDefinition.particleLifetimeSpread = 0;
 		this.coinsDefinition.particleImage = new Image();
 		this.coinsDefinition.particleImage.src = CoinImage;
 		this.coinsDefinition.particleMovement = new THREE.Vector3(0, -2, 0);
@@ -136,13 +136,13 @@ export default class GameModel extends EventManager {
 		this.smokeDefinition = new GeneratorDefinition();
 		this.smokeDefinition.scale = 0.3;
 		this.smokeDefinition.particleScaleGrowth = 0.5;
-		this.smokeDefinition.particleLifetime = 7;
-		this.smokeDefinition.particleLifetimeSpread = 0.2;
+		this.smokeDefinition.particleLifetime = 9;
+		this.smokeDefinition.particleLifetimeSpread = 2;
 		this.smokeDefinition.particleImage = new Image();
 		this.smokeDefinition.particleImage.src = SmokeImage;
 		this.smokeDefinition.particleMovement = new THREE.Vector3(1, 1.5, 0);
-		this.smokeDefinition.particleMovementSpread = new THREE.Vector3(0.3, 0.3, 0.3);
-		this.smokeDefinition.particlePositionSpread = new THREE.Vector3(0.1, 0.5, 0.1);
+		this.smokeDefinition.particleMovementSpread = new THREE.Vector3(0, 0.1, 0.5);
+		this.smokeDefinition.particlePositionSpread = new THREE.Vector3(0.1, 0, 0.1);
 
 		const chimney1 = this.scene.getObjectByName('Chimney1');
 		this.factorySmoke1 = new GeneratorModel(this.smokeDefinition, new THREE.Vector3());
