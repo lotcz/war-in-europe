@@ -8,6 +8,9 @@ import ThreeScene from "../assets/scene.json";
 import EventManager from "./class/basic/EventManager";
 import GeneratorDefinition from "./particles/GeneratorDefinition";
 
+import MoneyImage from "../assets/img/money.png";
+import CoinImage from "../assets/img/coin.png";
+
 import SmokeImage from "../assets/img/smoke.png";
 import SmokeWhiteImage from "../assets/img/smoke-white.png";
 import NoteImage1 from "../assets/img/note1.png";
@@ -78,7 +81,30 @@ export default class GameModel extends EventManager {
 		//this.ambient.intensity = 0.25;
 		this.center = this.scene.getObjectByName('Center');
 		this.factory = this.scene.getObjectByName('Factory');
+
 		this.money = this.scene.getObjectByName('Money');
+		this.money.removeFromParent();
+
+		const img = new Image();
+		img.src = MoneyImage;
+		const texture = new THREE.Texture();
+		texture.image = img;
+		texture.needsUpdate = true;
+		texture.repeat.set(1, 1);
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.wrapT = THREE.RepeatWrapping;
+		texture.encoding = THREE.sRGBEncoding;
+		const material = new THREE.SpriteMaterial({map: texture});
+		//this.materialBase.depthWrite = false;
+		material.depthTest = false;
+		material.alphaTest = 0.01;
+		const sprite = new THREE.Sprite(material);
+		sprite.scale.set(3.5, 3.5, 3.5);
+		this.money = new THREE.Group();
+		this.money.name = 'Money';
+		this.money.add(sprite);
+		this.scene.add(this.money);
+
 		this.moneyStart = this.scene.getObjectByName('MoneyStart');
 		this.moneyEnd = this.scene.getObjectByName('MoneyEnd');
 		this.kremlin = this.scene.getObjectByName('Kremlin');
@@ -91,6 +117,21 @@ export default class GameModel extends EventManager {
 		this.refugeesEnd = this.scene.getObjectByName('RefugeesEnd');
 
 		// GENERATORS
+
+		this.coinsDefinition = new GeneratorDefinition();
+		this.coinsDefinition.particlesPerSecond = 10;
+		this.coinsDefinition.scale = 0.5;
+		this.coinsDefinition.particleScaleGrowth = -0.2;
+		this.coinsDefinition.particleLifetime = 3;
+		this.coinsDefinition.particleLifetimeSpread = 0.1;
+		this.coinsDefinition.particleImage = new Image();
+		this.coinsDefinition.particleImage.src = CoinImage;
+		this.coinsDefinition.particleMovement = new THREE.Vector3(0, -2, 0);
+		this.coinsDefinition.particleMovementSpread = new THREE.Vector3(5, 0, 0);
+		this.coinsDefinition.particlePositionSpread = new THREE.Vector3(5, 0, 0);
+
+		this.coins1 = new GeneratorModel(this.coinsDefinition, new THREE.Vector3());
+		this.generators.push(this.coins1);
 
 		this.smokeDefinition = new GeneratorDefinition();
 		this.smokeDefinition.scale = 0.3;

@@ -31,8 +31,9 @@ export default class GeneratorDefinition {
 			texture.image = this.particleImage;
 			texture.needsUpdate = true;
 			texture.repeat.set(1, 1);
-			texture.wrapS = THREE.WrapAroundEnding;
-			texture.wrapT = THREE.WrapAroundEnding;
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.encoding = THREE.sRGBEncoding;
 			this.materialBase = new THREE.SpriteMaterial({map: texture});
 			//this.materialBase.depthWrite = false;
 			this.materialBase.depthTest = false;

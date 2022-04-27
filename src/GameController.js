@@ -108,7 +108,8 @@ export default class GameController {
 							this.model.factorySound.stop();
 						}
 					);
-					this.activateStageMoney();
+
+					this.activateStageMoneyTransition();
 				}
 			);
 			this.model.removeEventListener('click-Factory', handler);
@@ -118,14 +119,57 @@ export default class GameController {
 		this.model.addEventListener('click-Factory', handler);
 	}
 
+	activateStageMoneyTransition() {
+		this.model.money2Sound.replay();
+		this.model.activeGroup = null;
+
+		const moneyScale = new AnimatedValue(1, 0.8,150);
+		this.addController(
+			(delta) => {
+				const scale = moneyScale.get(delta);
+				this.model.money.scale.set(scale, scale, scale);
+			},
+			() => moneyScale.isFinished(),
+			() => {
+				const moneyScale = new AnimatedValue(0.8, 1, 150);
+				this.addController(
+					(delta) => {
+						const scale = moneyScale.get(delta);
+						this.model.money.scale.set(scale, scale, scale);
+					},
+					() => moneyScale.isFinished(),
+					() => {
+						this.model.coins1.position.copy(this.model.money.position);
+						this.model.coins1.on = true;
+						const moneyPosition = new AnimatedVector3(
+							this.model.moneyStart.position.clone(),
+							this.model.moneyEnd.position.clone(),
+							5000
+						);
+						this.addController(
+							(delta) => {
+								const pos = moneyPosition.get(delta);
+								this.model.money.position.set(pos.x, pos.y, pos.z);
+								this.model.coins1.position.copy(this.model.money.position);
+							},
+							() => moneyPosition.isFinished(),
+							() => this.activateStageMoney()
+						);
+					}
+				);
+			}
+		);
+	}
+
 	activateStageMoney() {
+		//this.model.coins1.on = false;
+
 		const handler = () => {
-			this.model.money2Sound.replay();
 			this.model.activeGroup = null;
 			const moneyPosition = new AnimatedVector3(
-				this.model.moneyStart.position.clone(),
-				this.model.moneyEnd.position.clone(),
-				2000
+				this.model.money.position.clone(),
+				this.model.money.position.clone().add(new THREE.Vector3(0, 0, 4)),
+				1000
 			);
 			this.addController(
 				(delta) => {
@@ -134,21 +178,15 @@ export default class GameController {
 				},
 				() => moneyPosition.isFinished(),
 				() => {
-					const moneyPosition = new AnimatedVector3(
-						this.model.moneyEnd.position.clone(),
-						this.model.moneyEnd.position.clone().add(new THREE.Vector3(1, -1, 3)),
-						1000
-					);
+					const dummy = new AnimatedValue(0, 1, 200);
 					this.addController(
-						(delta) => {
-							const pos = moneyPosition.get(delta);
-							this.model.money.position.set(pos.x, pos.y, pos.z);
-						},
-						() => moneyPosition.isFinished(),
+						(delta) => dummy.get(delta),
+						() => dummy.isFinished(),
 						() => {
-							const moneyScale = new AnimatedValue(1, 0,300);
+							this.model.money2Sound.replay();
+							const moneyScale = new AnimatedValue(1, 0, 300);
 							const moneyPosition = new AnimatedVector3(
-								this.model.moneyEnd.position.clone(),
+								this.model.money.position.clone(),
 								this.model.kremlin.position.clone(),
 								300
 							);
@@ -161,6 +199,7 @@ export default class GameController {
 								},
 								() => moneyScale.isFinished() && moneyPosition.isFinished(),
 								() => {
+									this.model.coins1.on = false;
 									this.activateStageKremlin();
 								}
 							);
