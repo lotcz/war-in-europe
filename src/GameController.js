@@ -92,6 +92,18 @@ export default class GameController {
 		const handler = () => {
 			this.model.activeGroup = null;
 			this.model.moneySound.replay();
+
+			const factoryVolume = new AnimatedValue(this.model.factorySound.volume(), 0,10000);
+			this.addController(
+				(delta) => {
+					this.model.factorySound.volume(factoryVolume.get(delta));
+				},
+				() => factoryVolume.isFinished(),
+				() => {
+					this.model.factorySound.stop();
+				}
+			);
+
 			const moneyScale = new AnimatedValue(0, 1,700);
 			const moneyPosition = new AnimatedVector3(
 				this.model.factory.position.clone(),
@@ -110,17 +122,6 @@ export default class GameController {
 					this.model.factorySmoke1.on = false;
 					this.model.factorySmoke2.on = false;
 					this.model.factorySmoke3.on = false;
-
-					const factoryVolume = new AnimatedValue(this.model.factorySound.volume(), 0,2500);
-					this.addController(
-						(delta) => {
-							this.model.factorySound.volume(factoryVolume.get(delta));
-						},
-						() => factoryVolume.isFinished(),
-						() => {
-							this.model.factorySound.stop();
-						}
-					);
 
 					this.activateStageMoneyTransition();
 				}
@@ -300,7 +301,7 @@ export default class GameController {
 										},
 										() => tankRotation.isFinished(),
 										() => {
-											const volume = new AnimatedValue(1, 0,2000);
+											const volume = new AnimatedValue(1, 0,1500);
 											this.addController(
 												(delta) => this.model.engineSound.volume(volume.get(delta)),
 												() => volume.isFinished(),
