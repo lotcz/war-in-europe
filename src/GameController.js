@@ -20,6 +20,7 @@ export default class GameController {
 
 		this.mouseMoveHandler = (e) => this.onPointerMove(e);
 		this.mouseClickHandler = (e) => this.onClick(e);
+		this.gameStartHandler = () => this.startGame();
 	}
 
 	activate() {
@@ -43,8 +44,7 @@ export default class GameController {
 		this.dom.addEventListener('mousemove', this.mouseMoveHandler);
 		this.dom.addEventListener('click', this.mouseClickHandler);
 
-		this.activateStageFactory();
-		//this.activateStageUkraine();
+		this.model.addEventListener('start', this.gameStartHandler);
 	}
 
 	deactivate() {
@@ -52,10 +52,23 @@ export default class GameController {
 		this.controllers = [];
 		this.dom.removeEventListener('mousemove', this.mouseMoveHandler);
 		this.dom.removeEventListener('click', this.mouseClickHandler);
+		this.model.removeEventListener('start', this.gameStartHandler);
 	}
 
 	update(delta) {
 		this.controllers.forEach((c) => c.update(delta));
+	}
+
+	startGame() {
+		this.activateStageFactory();
+		const opacity = new AnimatedValue(1, 0,1500);
+		this.addController(
+			(delta) => {
+				this.model.openingOpacity = opacity.get(delta);
+			},
+			() => opacity.isFinished(),
+			() => {}
+		);
 	}
 
 	activateStageFactory() {
@@ -168,8 +181,8 @@ export default class GameController {
 			this.model.activeGroup = null;
 			const moneyPosition = new AnimatedVector3(
 				this.model.money.position.clone(),
-				this.model.money.position.clone().add(new THREE.Vector3(0, 0, 4)),
-				1000
+				this.model.money.position.clone().add(new THREE.Vector3(0, 0, 2)),
+				500
 			);
 			this.addController(
 				(delta) => {
@@ -178,10 +191,17 @@ export default class GameController {
 				},
 				() => moneyPosition.isFinished(),
 				() => {
-					const dummy = new AnimatedValue(0, 1, 300);
+					const moneyPosition = new AnimatedVector3(
+						this.model.money.position.clone(),
+						this.model.money.position.clone().add(new THREE.Vector3(0, 0, 2)),
+						1000
+					);
 					this.addController(
-						(delta) => dummy.get(delta),
-						() => dummy.isFinished(),
+						(delta) => {
+							const pos = moneyPosition.get(delta);
+							this.model.money.position.set(pos.x, pos.y, pos.z);
+						},
+						() => moneyPosition.isFinished(),
 						() => {
 							this.model.money2Sound.replay();
 							const moneyScale = new AnimatedValue(1, 0, 300);
@@ -496,6 +516,27 @@ export default class GameController {
 				},
 				() => refugeesScale.isFinished() && refugeesPosition.isFinished(),
 				() => {
+					if (!this.model.finishedTheGame) {
+						this.model.finishedTheGame = true;
+						const top = new AnimatedValue(-65, 0,2500);
+						this.addController(
+							(delta) => {
+								this.model.creditsTop = top.get(delta);
+							},
+							() => top.isFinished(),
+							() => {
+							}
+						);
+						const opacity = new AnimatedValue(0, 1,1500);
+						this.addController(
+							(delta) => {
+								this.model.creditsOpacity = opacity.get(delta);
+							},
+							() => opacity.isFinished(),
+							() => {
+							}
+						);
+					}
 					this.activateStageFactory();
 				}
 			);

@@ -1,7 +1,6 @@
 body {
-	color: red;
-	font-size: 120%;
-	background: #000;
+	color: #909090;
+	background-color: #202020;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
@@ -27,15 +26,84 @@ body {
 }
 
 .war-in-europe > .container {
+	position: fixed;
 	background-image: url('../assets/img/map.png');
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: cover;
 	border-radius: 25px;
 	box-shadow: 0 0 25px 25px #304861af inset;
+	overflow: hidden;
 }
 
-.war-in-europe .container > * {
+.opening {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border-radius: 25px;
+	background-color: #304861;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.opening div {
+	background-color: #202020;
+	background-image: url('../assets/img/logo.png');
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: 75% 75%;
+	border-radius: 10px;
+	width: 450px;
+	height: 300px;
+	min-width: 250px;
+	max-width: 100%;
+	min-height: 200px;
+	max-height: 100%;
+}
+
+.opening button {
+	background-image: url('../assets/img/play.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 65% 45%;
+	background-color: #191919;
+	border-radius: 10px;
+	border: 0;
+	height: 60px;
+	width: 200px;
+	min-width: 150px;
+	max-width: 90%;
+	min-height: 60px;
+	max-height: 70px;
+	margin-top: 20px;
+	cursor: pointer;
+}
+
+.opening button:hover {
+	background-image: url('../assets/img/play2.png');
+}
+
+.credits {
+	position: absolute;
+	top: -65px;
+	opacity: 0;
+	left: 0;
+	height: 45px;
+	background-color: #202020;
+	font-size: 15px;
+	line-height: 20px;
+	padding: 10px 10px 10px 25px;
+	font-family: sans-serif, monospace;
+	border-bottom-right-radius: 5px;
+}
+
+.credits h1 {
 	margin: 0;
 	padding: 0;
+	font-size: 18px;
+	line-height: 25px;
 }

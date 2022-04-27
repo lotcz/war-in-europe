@@ -55,6 +55,11 @@ export default class GameModel extends EventManager {
 		this.generators = [];
 		this.systems = [];
 
+		this.openingOpacity = 1;
+		this.finishedTheGame = false;
+		this.creditsTop = -65;
+		this.creditsOpacity = 0;
+
 		this.raycaster = new THREE.Raycaster();
 		this.scene = new THREE.Scene();
 
