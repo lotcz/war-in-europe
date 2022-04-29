@@ -19,7 +19,9 @@ import NoteImage3 from "../assets/img/note3.png";
 import ScreamImage from "../assets/img/scream.png";
 import BloodImage from "../assets/img/blood.png";
 
-import Sound from "./class/Sound";
+import PlainSound from "./class/Sound";
+import MyAudio from "./class/MyAudio";
+
 import WarExplosionsSound from "../assets/sound/war-explosions.ogg";
 import FactorySound from "../assets/sound/factory.ogg";
 import CannonSound from "../assets/sound/cannon.ogg";
@@ -36,8 +38,9 @@ import GeneratorModel from "./particles/GeneratorModel";
 import ParticleSystemDefinition from "./particles/ParticleSystemDefinition";
 import ParticleSystemModel from "./particles/ParticleSystemModel";
 
-
 const ACTIVE_GROUPS = ['Factory', 'Money', 'Kremlin', 'Tank', 'Ukraine', 'Refugees'];
+
+const Sound = MyAudio.apiEnabled() ? MyAudio : PlainSound;
 
 export default class GameModel extends EventManager {
 

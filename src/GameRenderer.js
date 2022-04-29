@@ -19,7 +19,6 @@ export default class GameRenderer {
 		this.onButtonClickHandler = () => this.model.triggerEvent('start');
 
 		Pixies.destroyElement(document.getElementById('initial_loading'));
-
 	}
 
 	activate() {
@@ -31,7 +30,7 @@ export default class GameRenderer {
 		this.name = Pixies.createElement(this.credits, 'h1');
 		this.name.innerText = 'War in Europe 2022';
 		this.description = Pixies.createElement(this.credits, 'div');
-		this.description.innerHTML = 'Modern warfare simulator by <strong>anthropoid404</strong>.';
+		this.description.innerHTML = 'modern warfare simulator by <strong>anthropoid404</strong>';
 
 		this.opening = Pixies.createElement(this.container, 'div', 'opening');
 		this.inner = Pixies.createElement(this.opening, 'div');
@@ -41,6 +40,7 @@ export default class GameRenderer {
 		this.onResize();
 		window.addEventListener('resize', this.onResizeHandler);
 		this.model.addEventListener('selected', this.onGroupSelectedHandler);
+
 	}
 
 	deactivate() {
